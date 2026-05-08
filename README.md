@@ -2,9 +2,18 @@
 
 基于 Playwright 的抖音网页版自动续火花工具，每天定时给好友发送消息，保持火花不断。
 
+## 环境要求
+
+- **Node.js**（去 [nodejs.org](https://nodejs.org) 下载安装，LTS 版本即可）
+- 如果要用命令行克隆，还需要 **Git**
+
 ## 快速开始
 
-### 1. 克隆项目
+### 1. 下载项目
+
+**方法 A（推荐，无需 Git）**：打开 https://github.com/1zeronine/Autohuohua，点绿色 **Code** 按钮 → **Download ZIP**，解压到任意目录。
+
+**方法 B（需要 Git）**：在命令行中运行：
 
 ```bash
 git clone git@github.com:1zeronine/Autohuohua.git
@@ -13,7 +22,7 @@ cd Autohuohua
 
 ### 2. 安装依赖
 
-双击 `setup.bat`，或手动执行：
+双击 `setup.bat`，或在项目目录下打开命令行执行：
 
 ```bash
 npm install
