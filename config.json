@@ -1,0 +1,24 @@
+{
+  "friends": ["向 往","XI洛川","彼阳的晚意","Rely"],
+  "message": "🔥",
+  "headless": false,
+  "userDataDir": "./browser-data",
+  "douyin": {
+    "pages": {
+      "mainUrl": "https://www.douyin.com/jingxuan",
+      "loginUrl": "https://www.douyin.com"
+    }
+  },
+  "timeout": 30000,
+  "waitAfterSend": 2000,
+  "selectors": {
+    "loginIndicator": "input[placeholder*='手机号'], .login-modal, [class*='login']",
+    "chatList": "[class*='chat-list'], [class*='conversation-list'], [class*='message-list']",
+    "chatItem": "[class*='chat-item'], [class*='conversation-item'], [class*='contact-item']",
+    "friendName": "[class*='nickname'], [class*='name'], [class*='title']",
+    "sparkIndicator": "[class*='spark'], [class*='streak'], [class*='fire']",
+    "chatInput": "[contenteditable='true'], textarea, [class*='input-area'] textarea, [class*='editor']",
+    "sendButton": "[class*='send-btn'], button:has-text('发送'), [class*='send']",
+    "messagePanel": "[class*='chat-panel'], [class*='chat-window'], [class*='message-panel']"
+  }
+}
