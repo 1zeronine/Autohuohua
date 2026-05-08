@@ -1,7 +1,7 @@
 {
-  "friends": ["向 往","XI洛川","彼阳的晚意","Rely"],
+  "friends": ["XI洛川","彼阳的晚意","向 往","yj","Rely"],
   "message": "🔥",
-  "headless": false,
+  "headless": true,
   "userDataDir": "./browser-data",
   "douyin": {
     "pages": {

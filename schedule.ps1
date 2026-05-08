@@ -2,7 +2,7 @@
 # 右键 PowerShell 以管理员身份运行，输入: D:\Autohuohua\schedule.ps1
 
 $hour = 16
-$minute = 28
+$minute = 43
 
 $taskName = "AutoHuohua"
 $time = "{0:D2}:{1:D2}" -f $hour, $minute
