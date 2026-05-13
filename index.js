@@ -555,19 +555,70 @@ async function findChatInput(page) {
 
 // --- Try to send the message ---
 async function trySend(page, input) {
-    // Try send button
-    for (const sel of [
+    // Record current input text to verify sending later
+    const msgText = config.message;
+
+    // Strategy 1: Find and click send button
+    const sendBtnSelectors = [
         'button:has-text("发送")',
         '[class*="send-btn"]',
         'span:has-text("发送")',
         'button[class*="send"]',
-    ]) {
+        '[class*="send"] button',
+        '[class*="chat-input"] + [class*="send"]',
+        'svg[class*="send"]',
+    ];
+    for (const sel of sendBtnSelectors) {
         const btn = await page.$(sel).catch(() => null);
-        if (btn) { await btn.click(); return true; }
+        if (btn && (await btn.isVisible().catch(() => false))) {
+            await btn.click().catch(() => { });
+            await sleep(600);
+            // Verify: input should be cleared after send
+            const remaining = await getInputText(input).catch(() => '');
+            if (!remaining || remaining !== msgText) {
+                return true;
+            }
+        }
     }
-    // Fallback: Enter key
+
+    // Strategy 2: Enter key
     await input.press('Enter');
+    await sleep(600);
+    const afterEnter = await getInputText(input).catch(() => '');
+    if (!afterEnter || afterEnter !== msgText) {
+        return true;
+    }
+
+    // Strategy 3: Shift+Enter then click send again
+    await input.press('Meta+Enter');
+    await sleep(600);
+    const afterMeta = await getInputText(input).catch(() => '');
+    if (!afterMeta || afterMeta !== msgText) {
+        return true;
+    }
+
+    // Strategy 4: Ctrl+Enter
+    await input.press('Control+Enter');
+    await sleep(600);
+
+    // Last resort: click any element that might be a send trigger
+    const inputRect = await input.boundingBox().catch(() => null);
+    if (inputRect) {
+        // Click slightly to the right of the input (where send button typically sits)
+        await page.mouse.click(inputRect.x + inputRect.width + 40, inputRect.y + inputRect.height / 2).catch(() => { });
+        await sleep(400);
+    }
+
     return true;
+}
+
+// --- Get current text from input (contenteditable or textarea) ---
+async function getInputText(input) {
+    const tag = await input.evaluate(el => el.tagName?.toLowerCase()).catch(() => '');
+    if (tag === 'textarea' || tag === 'input') {
+        return (await input.inputValue().catch(() => '')) || '';
+    }
+    return (await input.textContent().catch(() => '')) || '';
 }
 
 // --- Expand the collapsed sidebar ---
@@ -676,11 +727,24 @@ async function sendInChat(page) {
 
     await input.click().catch(() => { });
     await sleep(300);
-    await input.fill('').catch(() => { });
+    // Clear any leftover text (might be from unsent previous message)
+    const tag = await input.evaluate(el => el.tagName?.toLowerCase()).catch(() => '');
+    if (tag === 'textarea' || tag === 'input') {
+        await input.fill('').catch(() => { });
+    } else {
+        // For contenteditable, select all and delete
+        await input.press('Control+a').catch(() => { });
+        await input.press('Backspace').catch(() => { });
+    }
+    await sleep(200);
     await input.type(config.message, { delay: 80 });
     await sleep(500);
 
-    await trySend(page, input);
+    // Send and verify
+    const sent = await trySend(page, input);
+    if (!sent) {
+        throw new Error('消息发送失败');
+    }
 }
 
 // --- Run ---
